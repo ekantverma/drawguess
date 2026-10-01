@@ -7,6 +7,7 @@ describe('text helpers', () => {
     expect(normalizeText('  Ice-Cream!  ')).toBe('ice cream');
     expect(normalizeText('CAFÉ')).toBe('cafe');
     expect(normalizeText("it's   a  CAT")).toBe('its a cat');
+    expect(normalizeText('किताब')).toBe('किताब');
   });
   it('cleans control chars and angle brackets', () => {
     expect(cleanText('  a\u0000<b>  c ')).toBe('ab c');
@@ -18,6 +19,7 @@ describe('text helpers', () => {
     expect(cleanCustomWord('12345')).toBeNull();
     expect(cleanCustomWord('one two three four')).toBeNull();
     expect(cleanCustomWord('rock; drop table')).toBeNull();
+    expect(cleanCustomWord('कुर्सी')).toBe('कुर्सी');
   });
 });
 
@@ -25,6 +27,12 @@ describe('settingsSchema', () => {
   it('accepts defaults', () => {
     expect(
       settingsSchema.safeParse({ ...defaultSettings, categories: [], customWords: [] }).success,
+    ).toBe(true);
+  });
+  it('accepts Hindi room settings', () => {
+    expect(
+      settingsSchema.safeParse({ ...defaultSettings, language: 'hi', categories: [], customWords: [] })
+        .success,
     ).toBe(true);
   });
   it('rejects out-of-range values', () => {

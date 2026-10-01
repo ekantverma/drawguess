@@ -8,7 +8,7 @@ export function cleanText(input: string): string {
   return input.replace(CONTROL, '').replace(/[<>]/g, '').replace(/\s+/g, ' ').trim();
 }
 
-const CUSTOM_WORD_RE = /^[\p{L}\p{N}][\p{L}\p{N} '-]*[\p{L}\p{N}]$/u;
+const CUSTOM_WORD_RE = /^[\p{L}\p{N}][\p{L}\p{M}\p{N} '-]*[\p{L}\p{M}\p{N}]$/u;
 
 /** Returns a cleaned custom word or null if invalid. */
 export function cleanCustomWord(input: string): string | null {
@@ -28,7 +28,7 @@ export function normalizeText(input: string): string {
     .replace(/[\u0300-\u036f]/g, '')
     .toLowerCase()
     .replace(/-/g, ' ')
-    .replace(/[^\p{L}\p{N}\s]/gu, '')
+    .replace(/[^\p{L}\p{M}\p{N}\s]/gu, '')
     .replace(/\s+/g, ' ')
     .trim();
 }

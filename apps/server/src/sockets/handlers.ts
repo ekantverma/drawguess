@@ -1,10 +1,12 @@
 import {
   createRoomSchema,
+  defaultSettings,
   drawEndSchema,
   drawMoveSchema,
   drawStartSchema,
   joinRoomSchema,
   kickSchema,
+  quickPlaySchema,
   readySchema,
   replayRequestSchema,
   reportSchema,
@@ -48,6 +50,30 @@ export class RoomHandler extends Handler {
         userId: ctx.userId,
       });
       ctx.bind(room, player);
+      return { roomCode: room.code, ...this.joined(room, player) };
+    });
+
+    on(ctx, 'quick_play', { schema: quickPlaySchema, bucket: 'room' }, (p) => {
+      this.leaveCurrent();
+      const room =
+        this.registry.findJoinablePublicRoom(p.language) ??
+        this.registry.create({
+          ...defaultSettings,
+          roomName: 'Quick play',
+          language: p.language,
+          categories: [],
+          customWords: [],
+          isPublic: true,
+        });
+      const { player } = room.join({
+        name: p.playerName,
+        avatar: p.avatar,
+        socketId: ctx.socket.id,
+        ip: ctx.ip,
+        userId: ctx.userId,
+      });
+      ctx.bind(room, player);
+      room.send(player, 'chat_history', { messages: room.historyFor(player) });
       return { roomCode: room.code, ...this.joined(room, player) };
     });
 

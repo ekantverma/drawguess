@@ -102,9 +102,13 @@ export default function DrawingCanvas({
 
   const down = (e: Konva.KonvaEventObject<PointerEvent>) => {
     if (!canDraw || live.current) return;
+    const { tool, color, size } = useToolStore.getState();
+    if (tool === 'fill') {
+      controller.fill(color);
+      return;
+    }
     const pos = norm(e.target.getStage()!);
     if (!pos) return;
-    const { tool, color, size } = useToolStore.getState();
     const id = `${(playerId ?? 'p').slice(0, 8)}-${Date.now().toString(36)}-${strokeCounter++}`;
     const stroke: Stroke = {
       id,
@@ -112,13 +116,20 @@ export default function DrawingCanvas({
       points: [pos[0], pos[1]],
       color,
       width: size,
-      tool,
+      tool: tool === 'marker' ? 'marker' : tool === 'eraser' ? 'eraser' : 'brush',
       timestamp: Date.now(),
       t: 0,
       dur: 0,
     };
     controller.start(stroke);
-    getSocket().emit('draw_start', { id, x: pos[0], y: pos[1], color, width: size, tool });
+    getSocket().emit('draw_start', {
+      id,
+      x: pos[0],
+      y: pos[1],
+      color,
+      width: size,
+      tool: stroke.tool,
+    });
     live.current = { id, pending: [], timer: setInterval(flush, FLUSH_MS), last: pos };
   };
 

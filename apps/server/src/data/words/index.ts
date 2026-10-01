@@ -3,12 +3,15 @@ import de from './de';
 import en from './en';
 import es from './es';
 import fr from './fr';
+import hi from './hi';
+import ja from './ja';
+import pt from './pt';
 import type { Difficulty, WordBankFile } from './types';
 
 export type { Difficulty, WordBankFile } from './types';
 
 /** Register a new language here after adding its word file. */
-export const STATIC_WORDS: Record<LanguageCode, WordBankFile> = { en, es, fr, de };
+export const STATIC_WORDS: Record<LanguageCode, WordBankFile> = { en, es, fr, de, hi, pt, ja };
 
 export interface WordEntry {
   text: string;

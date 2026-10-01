@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { Brush, Eraser, Trash2, Undo2 } from 'lucide-react';
+import { Brush, Eraser, PaintBucket, Pencil, Sparkles, Trash2, Undo2 } from 'lucide-react';
 import { CANVAS } from '@drawguess/shared';
 import { Button } from '@/components/ui/button';
 import { gameCanvas } from '@/lib/canvas';
@@ -44,6 +44,49 @@ export function Toolbar({ className }: { className?: string }) {
       role="toolbar"
       aria-label="Drawing tools"
     >
+      <div className="flex gap-1" role="group" aria-label="Tool palette">
+        <Button
+          size="icon"
+          variant={tool === 'brush' ? 'default' : 'outline'}
+          onClick={() => setTool('brush')}
+          aria-label="Brush tool"
+          aria-pressed={tool === 'brush'}
+          title="Brush"
+        >
+          <Pencil className="size-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant={tool === 'marker' ? 'default' : 'outline'}
+          onClick={() => setTool('marker')}
+          aria-label="Marker tool"
+          aria-pressed={tool === 'marker'}
+          title="Marker"
+        >
+          <Sparkles className="size-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant={tool === 'eraser' ? 'default' : 'outline'}
+          onClick={() => setTool('eraser')}
+          aria-label="Eraser tool"
+          aria-pressed={tool === 'eraser'}
+          title="Eraser"
+        >
+          <Eraser className="size-4" />
+        </Button>
+        <Button
+          size="icon"
+          variant={tool === 'fill' ? 'default' : 'outline'}
+          onClick={() => setTool('fill')}
+          aria-label="Fill tool"
+          aria-pressed={tool === 'fill'}
+          title="Fill"
+        >
+          <PaintBucket className="size-4" />
+        </Button>
+      </div>
+
       <div className="flex gap-1" role="group" aria-label="Colors">
         {CANVAS.colors.map((c) => (
           <button
@@ -51,10 +94,10 @@ export function Toolbar({ className }: { className?: string }) {
             type="button"
             onClick={() => setColor(c)}
             aria-label={`Color ${c}`}
-            aria-pressed={tool === 'brush' && color === c}
+            aria-pressed={((tool === 'brush' || tool === 'marker' || tool === 'fill') && color === c)}
             className={cn(
               'size-6 rounded-full border-2 border-border transition-transform hover:scale-110',
-              tool === 'brush' &&
+              (tool === 'brush' || tool === 'marker' || tool === 'fill') &&
                 color === c &&
                 'scale-110 ring-2 ring-ring ring-offset-1 ring-offset-card',
             )}
@@ -62,6 +105,7 @@ export function Toolbar({ className }: { className?: string }) {
           />
         ))}
       </div>
+
       <div className="flex items-center gap-1" role="group" aria-label="Brush size">
         {CANVAS.sizes.map((s) => (
           <button
@@ -82,25 +126,8 @@ export function Toolbar({ className }: { className?: string }) {
           </button>
         ))}
       </div>
+
       <div className="flex gap-1">
-        <Button
-          size="icon"
-          variant={tool === 'brush' ? 'default' : 'outline'}
-          onClick={() => setTool('brush')}
-          aria-label="Brush"
-          aria-pressed={tool === 'brush'}
-        >
-          <Brush />
-        </Button>
-        <Button
-          size="icon"
-          variant={tool === 'eraser' ? 'default' : 'outline'}
-          onClick={() => setTool('eraser')}
-          aria-label="Eraser"
-          aria-pressed={tool === 'eraser'}
-        >
-          <Eraser />
-        </Button>
         <Button size="icon" variant="outline" onClick={undo} aria-label="Undo last stroke">
           <Undo2 />
         </Button>

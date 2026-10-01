@@ -94,24 +94,26 @@ export function Lobby({ room, onLeave }: { room: RoomState; onLeave: () => void 
         </div>
       </header>
 
-      <section className="chunk mb-5 flex flex-wrap items-center gap-4 bg-secondary p-4 text-secondary-foreground">
-        <div className="min-w-0 flex-1">
-          <h1 className="truncate text-2xl font-extrabold sm:text-3xl">{room.settings.roomName}</h1>
-          <p className="text-sm font-semibold opacity-80">
+      <section className="chunk mb-5 grid gap-3 bg-secondary p-3 text-secondary-foreground sm:grid-cols-[minmax(0,1fr)_auto] sm:items-center sm:p-4">
+        <div className="min-w-0">
+          <h1 className="break-words text-xl font-extrabold sm:truncate sm:text-3xl">
+            {room.settings.roomName}
+          </h1>
+          <p className="max-w-prose text-xs font-semibold leading-snug opacity-80 sm:text-sm">
             Share the code or the link. Friends can join until the game starts.
           </p>
         </div>
-        <div className="flex flex-wrap items-center gap-2">
+        <div className="grid w-full grid-cols-2 gap-2 sm:flex sm:w-auto sm:items-center">
           <span
-            className="rounded-md border-2 border-border bg-card px-3 py-1.5 font-mono text-2xl font-extrabold tracking-[0.3em] text-card-foreground"
+            className="col-span-2 flex min-h-11 items-center justify-center rounded-md border-2 border-border bg-card px-3 py-1.5 font-mono text-xl font-extrabold tracking-[0.24em] text-card-foreground sm:col-span-1 sm:text-2xl sm:tracking-[0.3em]"
             aria-label={`Room code ${room.code.split('').join(' ')}`}
           >
             {room.code}
           </span>
-          <CopyButton value={room.code} label="Room code" variant="outline">
+          <CopyButton value={room.code} label="Room code" variant="outline" className="w-full sm:w-auto">
             Code
           </CopyButton>
-          <CopyButton value={link} label="Invite link" variant="default">
+          <CopyButton value={link} label="Invite link" variant="default" className="w-full sm:w-auto">
             Invite link
           </CopyButton>
         </div>

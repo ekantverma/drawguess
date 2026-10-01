@@ -87,7 +87,7 @@ Evidence key: **U** = server engine unit tests (`apps/server/tests/game.test.ts`
 | Word mode: Normal | E1 | ✅ |
 | Word mode: Hidden | U, E3 | ✅ |
 | Word mode: Combination | U (every choice is two words) | 🟡 not run in a browser |
-| Language | U (es + all four languages), E3 (Spanish choices in browser) | 🟡 fr/de verified at engine level only |
+| Language | U (all seven bundled languages), E3 (Spanish choices in browser) | 🟡 new Hindi/Portuguese/Japanese banks verified at engine level |
 | Categories filter | U | 🟡 UI chips not clicked in a browser |
 | Custom words + custom-only | SH (validation), U, E2 (only custom words offered) | ✅ |
 | Edit settings in lobby | E2 | ✅ |
@@ -151,4 +151,4 @@ Code is written and type-checked; an opt-in integration suite exists (`apps/serv
 | One-click random matchmaking | ❌ (browse + join public rooms instead) |
 | Horizontal scaling (Redis adapter) | ❌ documented limitation |
 | Persisting replays / drawings to MongoDB | ❌ by design (memory only) |
-| Languages beyond en/es/fr/de | ❌ (adding one = one word file + one line in `LANGUAGES`) |
+| Languages beyond en/es/fr/de/hi/pt/ja | ❌ (add a word file and register its code in `LANGUAGES`) |

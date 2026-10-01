@@ -59,6 +59,12 @@ class Client {
     this.adopt(res.data);
     return res.data.roomCode as string;
   }
+  async quickPlay(name: string, language = 'en') {
+    await this.ready();
+    const res = await this.emit('quick_play', { playerName: name, avatar: AVATAR, language });
+    if (res.ok) this.adopt(res.data);
+    return res;
+  }
   async join(code: string, name: string, extra: object = {}) {
     await this.ready();
     const res = await this.emit('join_room', {
@@ -126,7 +132,7 @@ describe('REST', () => {
   it('health, meta, room lookup & public listing', async () => {
     expect((await getJson(`${url}/health`)).status).toBe('ok');
     const meta = await getJson(`${url}/api/meta`);
-    expect(meta.languages.map((l: any) => l.code)).toEqual(['en', 'es', 'fr', 'de']);
+    expect(meta.languages.map((l: any) => l.code)).toEqual(['en', 'es', 'fr', 'de', 'hi', 'pt', 'ja']);
     const a = new Client();
     const code = await a.create('Host');
     const look = await getJson(`${url}/api/rooms/${code}`);
@@ -175,6 +181,27 @@ describe('lobby over the wire', () => {
     const solo = new Client();
     await solo.create('Solo');
     expect((await solo.emit('start_game', {})).error.code).toBe('NOT_ENOUGH_PLAYERS');
+  });
+});
+
+describe('quick play matchmaking', () => {
+  it('joins a compatible public lobby and creates a public fallback for another language', async () => {
+    const first = new Client();
+    const firstJoin = await first.quickPlay('Sketcher', 'de');
+    expect(firstJoin.ok).toBe(true);
+    expect(firstJoin.data.state.settings).toMatchObject({ isPublic: true, language: 'de' });
+
+    const second = new Client();
+    const secondJoin = await second.quickPlay('Guesser', 'de');
+    expect(secondJoin.ok).toBe(true);
+    expect(secondJoin.data.roomCode).toBe(firstJoin.data.roomCode);
+    expect(secondJoin.data.state.players).toHaveLength(2);
+
+    const french = new Client();
+    const frenchJoin = await french.quickPlay('Bonjour', 'fr');
+    expect(frenchJoin.ok).toBe(true);
+    expect(frenchJoin.data.roomCode).not.toBe(firstJoin.data.roomCode);
+    expect(frenchJoin.data.state.settings).toMatchObject({ isPublic: true, language: 'fr' });
   });
 });
 

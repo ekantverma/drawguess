@@ -1,9 +1,18 @@
-import { beforeEach, describe, expect, it } from 'vitest';
-import { render, screen } from '@testing-library/react';
+import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
 import { defaultSettings, type RoomState } from '@drawguess/shared';
 import { WordDisplay } from '@/components/game/WordDisplay';
 import { Avatar } from '@/components/Avatar';
+import { LandingExperience } from '@/components/LandingExperience';
 import { useGameStore } from '@/stores/gameStore';
+
+const routerPush = vi.hoisted(() => vi.fn());
+vi.mock('next/navigation', () => ({ useRouter: () => ({ push: routerPush }) }));
+vi.mock('@/lib/socket', () => ({ request: vi.fn() }));
+vi.mock('@/lib/canvas', () => ({ gameCanvas: { clear: vi.fn() } }));
+import { request } from '@/lib/socket';
+
+afterEach(cleanup);
 
 const base = (over: Partial<RoomState['game']> = {}, you = 'me'): RoomState => ({
   code: 'ABC123',
@@ -76,6 +85,49 @@ describe('Avatar', () => {
   it('renders for every valid config and clamps bad values safely', () => {
     const { container } = render(<Avatar avatar={{ color: 99, eyes: -3, mouth: 2, hat: 5 }} />);
     expect(container.querySelector('svg')).not.toBeNull();
+  });
+});
+
+describe('LandingExperience', () => {
+  beforeEach(() => {
+    localStorage.clear();
+    sessionStorage.clear();
+    routerPush.mockReset();
+    vi.mocked(request).mockReset();
+  });
+
+  it('validates the name and changes the selected avatar', () => {
+    const { container } = render(<LandingExperience />);
+    fireEvent.click(screen.getByRole('button', { name: 'Play!' }));
+    expect(screen.getByRole('alert')).toHaveTextContent(/at least 2 characters/i);
+
+    const preview = screen.getByLabelText('Selected avatar');
+    const before = preview.innerHTML;
+    fireEvent.click(screen.getByRole('button', { name: 'Next avatar' }));
+    expect(screen.getByLabelText('Selected avatar').innerHTML).not.toBe(before);
+    expect(container.querySelectorAll('.landing-welcome-avatar')).toHaveLength(7);
+  });
+
+  it('passes name, language, and avatar into confirmed quick play', async () => {
+    const state = base();
+    vi.mocked(request).mockResolvedValue({
+      roomCode: 'ABC123',
+      playerId: 'player-1',
+      playerToken: 'player-token-123456',
+      state,
+    });
+    render(<LandingExperience />);
+    fireEvent.change(screen.getByLabelText('Your name'), { target: { value: '  Sketcher  ' } });
+    fireEvent.change(screen.getByLabelText('Word language'), { target: { value: 'fr' } });
+    fireEvent.click(screen.getByRole('button', { name: 'Play!' }));
+
+    await waitFor(() => expect(routerPush).toHaveBeenCalledWith('/room/ABC123'));
+    expect(request).toHaveBeenCalledWith('quick_play', {
+      playerName: 'Sketcher',
+      avatar: expect.objectContaining({ color: expect.any(Number) }),
+      language: 'fr',
+    });
+    expect(JSON.parse(localStorage.getItem('drawguess:profile')!).language).toBe('fr');
   });
 });
 

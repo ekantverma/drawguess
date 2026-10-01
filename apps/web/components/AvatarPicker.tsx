@@ -15,12 +15,73 @@ const PARTS = [
 export function AvatarPicker({
   value,
   onChange,
+  layout = 'parts',
 }: {
   value: AvatarConfig;
   onChange: (a: AvatarConfig) => void;
+  layout?: 'parts' | 'carousel';
 }) {
   const step = (key: keyof AvatarConfig, max: number, d: number) =>
     onChange({ ...value, [key]: (value[key] + d + max) % max });
+  if (layout === 'carousel') {
+    const count = AVATAR_LIMITS.color * AVATAR_LIMITS.eyes * AVATAR_LIMITS.mouth * AVATAR_LIMITS.hat;
+    const index =
+      ((value.color * AVATAR_LIMITS.eyes + value.eyes) * AVATAR_LIMITS.mouth + value.mouth) *
+        AVATAR_LIMITS.hat +
+      value.hat;
+    const cycle = (delta: number) => {
+      let next = (index + delta + count) % count;
+      const hat = next % AVATAR_LIMITS.hat;
+      next = Math.floor(next / AVATAR_LIMITS.hat);
+      const mouth = next % AVATAR_LIMITS.mouth;
+      next = Math.floor(next / AVATAR_LIMITS.mouth);
+      const eyes = next % AVATAR_LIMITS.eyes;
+      const color = Math.floor(next / AVATAR_LIMITS.eyes);
+      onChange({ color, eyes, mouth, hat });
+    };
+    return (
+      <div className="flex flex-col items-center gap-2">
+        <div className="flex items-center gap-5">
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="landing-avatar-nav size-11 rounded-full"
+            onClick={() => cycle(-1)}
+            aria-label="Previous avatar"
+          >
+            <ChevronLeft className="size-6" />
+          </Button>
+          <Avatar
+            key={`${value.color}-${value.eyes}-${value.mouth}-${value.hat}`}
+            avatar={value}
+            className="size-24 drop-shadow-[0_12px_20px_rgba(0,0,0,0.25)]"
+            title="Selected avatar"
+          />
+          <Button
+            type="button"
+            variant="ghost"
+            size="icon"
+            className="landing-avatar-nav size-11 rounded-full"
+            onClick={() => cycle(1)}
+            aria-label="Next avatar"
+          >
+            <ChevronRight className="size-6" />
+          </Button>
+        </div>
+        <Button
+          type="button"
+          variant="ghost"
+          size="sm"
+          className="landing-avatar-shuffle"
+          onClick={() => onChange(randomAvatar())}
+          aria-label="Random avatar"
+        >
+          <Shuffle /> Surprise me
+        </Button>
+      </div>
+    );
+  }
   return (
     <div className="flex items-center gap-4">
       <Avatar avatar={value} className="size-20" title="Your avatar" />

@@ -1,11 +1,13 @@
 import { create } from 'zustand';
 import { CANVAS } from '@drawguess/shared';
 
+type ToolMode = 'brush' | 'marker' | 'eraser' | 'fill';
+
 interface ToolStore {
-  tool: 'brush' | 'eraser';
+  tool: ToolMode;
   color: string;
   size: number;
-  setTool: (t: 'brush' | 'eraser') => void;
+  setTool: (t: ToolMode) => void;
   setColor: (c: string) => void;
   setSize: (s: number) => void;
 }
@@ -15,6 +17,6 @@ export const useToolStore = create<ToolStore>((set) => ({
   color: CANVAS.colors[0],
   size: CANVAS.sizes[1],
   setTool: (tool) => set({ tool }),
-  setColor: (color) => set({ color, tool: 'brush' }),
+  setColor: (color) => set((state) => ({ color, tool: state.tool === 'fill' ? 'fill' : state.tool === 'marker' ? 'marker' : 'brush' })),
   setSize: (size) => set({ size }),
 }));

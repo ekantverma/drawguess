@@ -1,8 +1,9 @@
-import { AVATAR_LIMITS, type AvatarConfig } from '@drawguess/shared';
+import { AVATAR_LIMITS, type AvatarConfig, type LanguageCode } from '@drawguess/shared';
 
 export interface Profile {
   name: string;
   avatar: AvatarConfig;
+  language?: LanguageCode;
 }
 const PROFILE_KEY = 'drawguess:profile';
 
@@ -26,7 +27,7 @@ export function loadProfile(): Profile | null {
 }
 export function saveProfile(p: Profile): void {
   try {
-    localStorage.setItem(PROFILE_KEY, JSON.stringify(p));
+    localStorage.setItem(PROFILE_KEY, JSON.stringify({ ...loadProfile(), ...p }));
   } catch {
     /* storage unavailable (private mode) - profile just will not persist */
   }

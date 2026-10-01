@@ -75,6 +75,19 @@ export class RoomRegistry {
       }));
   }
 
+  findJoinablePublicRoom(language: string): Room | undefined {
+    return [...this.rooms.values()]
+      .filter(
+        (room) =>
+          room.settings.isPublic &&
+          room.settings.language === language &&
+          room.phase === 'LOBBY' &&
+          room.connectedCount() > 0 &&
+          room.playerCount() < room.settings.maxPlayers,
+      )
+      .sort((a, b) => b.playerCount() - a.playerCount())[0];
+  }
+
   /** Delete rooms that have had nobody connected for emptyRoomTtlSec. */
   sweep(now = Date.now()): number {
     let removed = 0;

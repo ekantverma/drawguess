@@ -13,8 +13,7 @@ import {
   Users,
 } from 'lucide-react';
 import { DoodlePad } from '@/components/DoodlePad';
-import { Logo } from '@/components/Logo';
-import { ThemeToggle } from '@/components/ThemeToggle';
+import { LandingExperience } from '@/components/LandingExperience';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 
@@ -49,8 +48,8 @@ const FEATURES = [
   },
   {
     i: Languages,
-    t: 'Words in four languages',
-    d: 'English, Español, Français and Deutsch, by category, plus your own custom words.',
+    t: 'Words in seven languages',
+    d: 'English, Español, Français, Deutsch, हिन्दी, Português and 日本語, by category, plus your own custom words.',
   },
   {
     i: Eye,
@@ -77,123 +76,106 @@ export default function Home() {
     router.push(`/join${code ? `?code=${code}` : ''}`);
   };
   return (
-    <div className="paper-dots">
-      <header className="mx-auto flex max-w-6xl items-center gap-3 p-4">
-        <Logo />
-        <nav className="ml-auto flex items-center gap-1 text-sm font-bold" aria-label="Main">
-          <Link href="#how" className="hidden rounded-md px-3 py-2 hover:bg-muted sm:block">
-            How to play
-          </Link>
-          <Link href="/join" className="hidden rounded-md px-3 py-2 hover:bg-muted sm:block">
-            Public rooms
-          </Link>
-          <Link href="/history" className="hidden rounded-md px-3 py-2 hover:bg-muted sm:block">
-            History
-          </Link>
-          <Link href="/account" className="rounded-md px-3 py-2 hover:bg-muted">
-            Account
-          </Link>
-          <ThemeToggle />
-        </nav>
-      </header>
-
-      <main>
-        <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-6 md:grid-cols-2 md:pt-12">
-          <div>
-            <h1 className="text-5xl font-extrabold leading-[1.02] sm:text-6xl">
-              Sketch it.
-              <br />
-              Shout it.
-              <br />
-              Score it.
-            </h1>
-            <p className="mt-5 max-w-md text-lg text-muted-foreground">
+    <>
+      <LandingExperience />
+      <div className="paper-dots">
+        <main>
+          {/* <section className="mx-auto grid max-w-6xl items-center gap-10 px-4 pb-16 pt-6 md:grid-cols-2 md:pt-12">
+            <div>
+              <h1 className="text-5xl font-extrabold leading-[1.02] sm:text-6xl">
+                Sketch it.
+                <br />
+                Shout it.
+                <br />
+                Score it.
+              </h1>
+              <p className="mt-5 max-w-md text-lg text-muted-foreground">
               DrawGuess is a free multiplayer drawing game. One player draws a secret word, everyone
               else races to guess it. No sign-up needed.
-            </p>
-            <div className="mt-7 flex flex-wrap gap-3">
-              <Button asChild size="lg" variant="secondary">
-                <Link href="/create-room">Create a room</Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/join">Browse public rooms</Link>
-              </Button>
+              </p>
+              <div className="mt-7 flex flex-wrap gap-3">
+                <Button asChild size="lg" variant="secondary">
+                  <Link href="/create-room">Create a room</Link>
+                </Button>
+                <Button asChild size="lg" variant="outline">
+                  <Link href="/join">Browse public rooms</Link>
+                </Button>
+              </div>
+              <form
+                onSubmit={go}
+                className="mt-6 flex max-w-sm gap-2"
+                aria-label="Join with a room code"
+              >
+                <Input
+                  value={code}
+                  onChange={(e) =>
+                    setCode(
+                      e.target.value
+                        .toUpperCase()
+                        .replace(/[^A-Z0-9]/g, '')
+                        .slice(0, 6),
+                    )
+                  }
+                  placeholder="Room code"
+                  aria-label="Room code"
+                  className="h-12 text-center font-mono text-lg font-extrabold tracking-[0.3em]"
+                  autoComplete="off"
+                />
+                <Button type="submit" size="lg">
+                  Join room
+                </Button>
+              </form>
             </div>
-            <form
-              onSubmit={go}
-              className="mt-6 flex max-w-sm gap-2"
-              aria-label="Join with a room code"
-            >
-              <Input
-                value={code}
-                onChange={(e) =>
-                  setCode(
-                    e.target.value
-                      .toUpperCase()
-                      .replace(/[^A-Z0-9]/g, '')
-                      .slice(0, 6),
-                  )
-                }
-                placeholder="Room code"
-                aria-label="Room code"
-                className="h-12 text-center font-mono text-lg font-extrabold tracking-[0.3em]"
-                autoComplete="off"
-              />
-              <Button type="submit" size="lg">
-                Join room
-              </Button>
-            </form>
-          </div>
-          <DoodlePad />
-        </section>
+            <DoodlePad />
+          </section> */}
 
-        <section id="how" className="border-y-2 border-border bg-card py-14">
-          <div className="mx-auto max-w-6xl px-4">
-            <h2 className="mb-8 text-3xl font-extrabold">How to play</h2>
-            <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
-              {STEPS.map((s, i) => (
-                <li key={s.t} className="relative pl-12">
-                  <span className="absolute left-0 top-0 grid size-9 place-items-center rounded-full border-2 border-border bg-secondary font-display text-lg font-extrabold shadow-chunk-sm">
-                    {i + 1}
+          <section id="how" className="border-y-2 border-border bg-card py-14">
+            <div className="mx-auto max-w-6xl px-4">
+              <h2 className="mb-8 text-3xl font-extrabold">How to play</h2>
+              <ol className="grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
+                {STEPS.map((s, i) => (
+                  <li key={s.t} className="relative pl-12">
+                    <span className="absolute left-0 top-0 grid size-9 place-items-center rounded-full border-2 border-border bg-secondary font-display text-lg font-extrabold shadow-chunk-sm">
+                      {i + 1}
+                    </span>
+                    <h3 className="text-lg font-extrabold leading-snug">{s.t}</h3>
+                    <p className="mt-1 text-sm text-muted-foreground">{s.d}</p>
+                  </li>
+                ))}
+              </ol>
+            </div>
+          </section>
+
+          <section className="mx-auto max-w-6xl px-4 py-14">
+            <h2 className="mb-8 text-3xl font-extrabold">Everything a party needs</h2>
+            <ul className="grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
+              {FEATURES.map(({ i: Icon, t, d }) => (
+                <li key={t} className="flex gap-3">
+                  <span className="grid size-10 shrink-0 place-items-center rounded-md border-2 border-border bg-accent/40">
+                    <Icon className="size-5" />
                   </span>
-                  <h3 className="text-lg font-extrabold leading-snug">{s.t}</h3>
-                  <p className="mt-1 text-sm text-muted-foreground">{s.d}</p>
+                  <div>
+                    <h3 className="font-extrabold">{t}</h3>
+                    <p className="text-sm text-muted-foreground">{d}</p>
+                  </div>
                 </li>
               ))}
-            </ol>
-          </div>
-        </section>
-
-        <section className="mx-auto max-w-6xl px-4 py-14">
-          <h2 className="mb-8 text-3xl font-extrabold">Everything a party needs</h2>
-          <ul className="grid gap-x-10 gap-y-7 sm:grid-cols-2 lg:grid-cols-3">
-            {FEATURES.map(({ i: Icon, t, d }) => (
-              <li key={t} className="flex gap-3">
-                <span className="grid size-10 shrink-0 place-items-center rounded-md border-2 border-border bg-accent/40">
-                  <Icon className="size-5" />
-                </span>
-                <div>
-                  <h3 className="font-extrabold">{t}</h3>
-                  <p className="text-sm text-muted-foreground">{d}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
-          <div className="chunk mt-12 flex flex-wrap items-center justify-between gap-4 bg-primary p-6 text-primary-foreground">
-            <div className="flex items-center gap-3">
-              <MessageCircle className="size-8" />
-              <p className="font-display text-2xl font-extrabold">
-                Your friends are one link away.
-              </p>
+            </ul>
+            <div className="chunk mt-12 flex flex-wrap items-center justify-between gap-4 bg-primary p-6 text-primary-foreground">
+              <div className="flex items-center gap-3">
+                <MessageCircle className="size-8" />
+                <p className="font-display text-2xl font-extrabold">
+                  Your friends are one link away.
+                </p>
+              </div>
+              <Button asChild size="lg" variant="secondary">
+                <Link href="/create-room">Start a room</Link>
+              </Button>
             </div>
-            <Button asChild size="lg" variant="secondary">
-              <Link href="/create-room">Start a room</Link>
-            </Button>
-          </div>
-        </section>
-      </main>
+          </section>
+        </main>
 
-      <footer className="border-t-2 border-border py-6 text-center text-sm text-muted-foreground">
+        <footer className="border-t-2 border-border py-6 text-center text-sm text-muted-foreground">
   <p className="flex flex-wrap items-center justify-center gap-x-4 gap-y-1">
     <span className="font-bold text-foreground">DrawGuess</span>
     <Link href="/join" className="hover:underline">
@@ -217,7 +199,8 @@ export default function Home() {
       Ekant Verma
     </a>
   </p>
-</footer>
-    </div>
+        </footer>
+      </div>
+    </>
   );
 }

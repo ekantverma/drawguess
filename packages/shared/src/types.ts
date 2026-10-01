@@ -52,7 +52,7 @@ export interface Stroke {
   color: string;
   /** brush width in virtual px (800x600 stage) */
   width: number;
-  tool: 'brush' | 'eraser';
+  tool: 'brush' | 'marker' | 'eraser';
   timestamp: number;
   /** ms since turn drawing start (for replay) */
   t: number;

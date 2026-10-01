@@ -131,6 +131,12 @@ export const createRoomSchema = z.object({
   settings: settingsSchema,
 });
 
+export const quickPlaySchema = z.object({
+  playerName: playerNameSchema,
+  avatar: avatarSchema,
+  language: z.string().refine((c) => langCodes.includes(c), 'Unsupported language'),
+});
+
 export const joinRoomSchema = z.object({
   roomCode: roomCodeSchema,
   playerName: playerNameSchema,
@@ -171,7 +177,7 @@ export const drawStartSchema = z.object({
   y: unit,
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   width: z.number().min(1).max(60),
-  tool: z.enum(['brush', 'eraser']),
+  tool: z.enum(['brush', 'marker', 'eraser']),
 });
 export const drawMoveSchema = z.object({
   id: strokeId,

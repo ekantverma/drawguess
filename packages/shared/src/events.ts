@@ -34,6 +34,11 @@ export interface JoinRoomPayload {
   playerToken?: string;
   spectate?: boolean;
 }
+export interface QuickPlayPayload {
+  playerName: string;
+  avatar: AvatarConfig;
+  language: string;
+}
 
 export type DrawData =
   | { op: 'start'; stroke: Stroke }
@@ -43,6 +48,10 @@ export type DrawData =
 export interface ClientToServerEvents {
   create_room: (
     p: CreateRoomPayload,
+    ack: (r: Ack<JoinedData & { roomCode: string }>) => void,
+  ) => void;
+  quick_play: (
+    p: QuickPlayPayload,
     ack: (r: Ack<JoinedData & { roomCode: string }>) => void,
   ) => void;
   join_room: (p: JoinRoomPayload, ack: (r: Ack<JoinedData>) => void) => void;
@@ -59,7 +68,7 @@ export interface ClientToServerEvents {
     y: number;
     color: string;
     width: number;
-    tool: 'brush' | 'eraser';
+    tool: 'brush' | 'marker' | 'eraser';
   }) => void;
   draw_move: (p: { id: string; points: number[] }) => void;
   draw_end: (p: { id: string }) => void;

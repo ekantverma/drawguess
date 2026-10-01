@@ -15,7 +15,7 @@ rounds 2-10, draw time 15-240 s, 1-5 word choices, 0-5 hints, word mode Normal/H
 custom words), turn-based drawing on a Konva canvas (brush, 12 colors, 4 sizes, eraser, undo, clear), real-time stroke sync,
 server-side word matching and scoring, timed hints, chat with guessers-only/spectator channels, leaderboard + winner,
 game history, **moderation** (host kick/ban, vote-kick, reports), **spectator mode**, **round replay**, **avatars**
-(generated SVG, no assets), **4 languages** (en/es/fr/de), reconnection with host migration, dark mode, responsive UI.
+(generated SVG, no assets), **7 languages** (en/es/fr/de/hi/pt/ja), reconnection with host migration, dark mode, responsive UI.
 See [`TRACEABILITY.md`](./TRACEABILITY.md) for what is verified vs. unverified.
 
 ## Tech stack
@@ -45,7 +45,7 @@ drawguess/
 │       ├── src/sockets/          TRANSPORT: SocketGateway + RoomHandler/GameHandler/DrawHandler/ChatHandler/ModerationHandler
 │       ├── src/routes/ services/ REST API, Mongo access (words, history, stats, reports, auth)
 │       ├── src/models/           Mongoose: Word, User, GameHistory, PlayerStatistics, Report
-│       ├── src/data/words/       word banks per language (en, es, fr, de)
+│       ├── src/data/words/       word banks per language (en, es, fr, de, hi, pt, ja)
 │       ├── src/scripts/seed.ts   seeds MongoDB with the word banks
 │       └── tests/                game engine, socket integration, MongoDB (opt-in)
 ├── packages/shared/              event types, Zod schemas, constants (single source of truth)
@@ -89,7 +89,7 @@ docker run -d --name drawguess-mongo -p 27017:27017 mongo:7
 # apps/server/.env
 MONGODB_URI=mongodb://127.0.0.1:27017/drawguess
 
-npm run seed        # inserts the en/es/fr/de word banks (idempotent)
+npm run seed        # inserts the bundled language word banks (idempotent)
 npm run dev
 ```
 

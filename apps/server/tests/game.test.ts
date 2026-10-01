@@ -1,7 +1,8 @@
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
-import { TIMING } from '@drawguess/shared';
+import { LANGUAGES, TIMING } from '@drawguess/shared';
 import { GameError } from '../src/game/errors';
 import { pickWinner, ScoreManager } from '../src/game/ScoreManager';
+import { WordService } from '../src/game/WordService';
 import { drawerOf, setup } from './helpers';
 
 beforeEach(() => vi.useFakeTimers());
@@ -143,7 +144,7 @@ describe('word selection & secret isolation', () => {
   });
 
   it('every shipped language yields valid, distinct choices', () => {
-    for (const language of ['en', 'es', 'fr', 'de']) {
+    for (const { code: language } of LANGUAGES) {
       const ctx = startTwo({ language, wordCount: 5 });
       const opts = ctx.room.game!.turn!.options;
       expect(new Set(opts).size).toBe(5);
@@ -156,6 +157,15 @@ describe('word selection & secret isolation', () => {
     const { STATIC_WORDS, flattenWordFile } = require_es();
     const es = new Set(flattenWordFile('es', STATIC_WORDS.es).map((w) => w.text));
     expect(opts.every((o) => es.has(o))).toBe(true);
+  });
+
+  it('preserves Hindi vowel marks in guesses and hints', () => {
+    const ctx = startTwo({ language: 'hi' });
+    expect(ctx.words.matches('किताब', 'किताब')).toBe(true);
+    expect(ctx.words.matches('कतब', 'किताब')).toBe(false);
+    expect(WordService.letterIndices('किताब')).toEqual([0, 1, 2]);
+    expect(ctx.words.mask('किताब', new Set(), 'normal')).toBe('___');
+    expect(ctx.words.mask('किताब', new Set([0]), 'normal')).toBe('कि__');
   });
 });
 

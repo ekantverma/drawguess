@@ -6,6 +6,7 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { toast } from 'sonner';
 import {
+  LANGUAGES,
   playerNameSchema,
   type AvatarConfig,
   type JoinedData,
@@ -13,7 +14,7 @@ import {
 } from '@drawguess/shared';
 import { AvatarPicker } from '@/components/AvatarPicker';
 import { Logo } from '@/components/Logo';
-import { SettingsForm } from '@/components/SettingsForm';
+import { DEFAULT_INPUT, SettingsForm } from '@/components/SettingsForm';
 import { ThemeToggle } from '@/components/ThemeToggle';
 import { Input } from '@/components/ui/input';
 import { FieldError, Label } from '@/components/ui/label';
@@ -27,6 +28,7 @@ const nameSchema = z.object({ name: playerNameSchema });
 export default function CreateRoomPage() {
   const router = useRouter();
   const [avatar, setAvatar] = useState<AvatarConfig>({ color: 3, eyes: 0, mouth: 0, hat: 0 });
+  const [settingsLanguage, setSettingsLanguage] = useState(DEFAULT_INPUT.language);
   const [busy, setBusy] = useState(false);
   const nameRef = useRef<HTMLInputElement | null>(null);
   const form = useForm<z.input<typeof nameSchema>>({
@@ -40,6 +42,11 @@ export default function CreateRoomPage() {
     if (p) {
       form.setValue('name', p.name);
       setAvatar(p.avatar);
+      setSettingsLanguage(
+        LANGUAGES.some((language) => language.code === p.language)
+          ? p.language!
+          : DEFAULT_INPUT.language,
+      );
     } else setAvatar(randomAvatar());
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
@@ -60,7 +67,7 @@ export default function CreateRoomPage() {
         avatar,
         settings,
       });
-      saveProfile({ name, avatar });
+      saveProfile({ name, avatar, language: settings.language });
       saveSession(data.roomCode, { token: data.playerToken, playerId: data.playerId });
       useGameStore.getState().applyState(data.state);
       router.push(`/room/${data.roomCode}`);
@@ -104,7 +111,13 @@ export default function CreateRoomPage() {
         </section>
         <section className="chunk p-4">
           <h2 className="mb-3 text-lg font-extrabold">Room settings</h2>
-          <SettingsForm submitLabel="Create room" busy={busy} onSubmit={create} />
+          <SettingsForm
+            key={settingsLanguage}
+            initial={{ ...DEFAULT_INPUT, language: settingsLanguage }}
+            submitLabel="Create room"
+            busy={busy}
+            onSubmit={create}
+          />
         </section>
       </div>
     </div>

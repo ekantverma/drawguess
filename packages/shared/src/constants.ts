@@ -33,6 +33,9 @@ export const LANGUAGES = [
   { code: 'es', label: 'Español' },
   { code: 'fr', label: 'Français' },
   { code: 'de', label: 'Deutsch' },
+  { code: 'hi', label: 'हिन्दी' },
+  { code: 'pt', label: 'Português' },
+  { code: 'ja', label: '日本語' },
 ] as const;
 export const LANGUAGE_CODES = LANGUAGES.map((l) => l.code) as unknown as readonly [
   'en',

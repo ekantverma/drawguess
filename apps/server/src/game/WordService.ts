@@ -75,17 +75,26 @@ export class WordService {
 
   static letterIndices(word: string): number[] {
     const idx: number[] = [];
-    [...word].forEach((ch, i) => {
-      if (/[\p{L}\p{N}]/u.test(ch)) idx.push(i);
+    WordService.units(word).forEach((unit, i) => {
+      if (/[\p{L}\p{N}]/u.test(unit)) idx.push(i);
     });
     return idx;
+  }
+
+  private static units(word: string): string[] {
+    const units: string[] = [];
+    for (const char of word) {
+      if (/\p{M}/u.test(char) && units.length) units[units.length - 1] += char;
+      else units.push(char);
+    }
+    return units;
   }
 
   /** "_ _ a _ _" style mask encoded as a string of the same length. Hidden mode => "". */
   mask(word: string, revealed: Set<number>, mode: RoomSettings['wordMode']): string {
     if (mode === 'hidden') return '';
-    return [...word]
-      .map((ch, i) => (/[\p{L}\p{N}]/u.test(ch) ? (revealed.has(i) ? ch : '_') : ch))
+    return WordService.units(word)
+      .map((unit, i) => (/^[\p{L}\p{N}]/u.test(unit) ? (revealed.has(i) ? unit : '_') : unit))
       .join('');
   }
 
