@@ -1,0 +1,108 @@
+import type { WordBankFile } from './types';
+
+const es: WordBankFile = {
+  animals: {
+    easy: ['gato', 'perro', 'pez', 'pájaro', 'vaca', 'cerdo', 'pato', 'rana'],
+    medium: [
+      'elefante',
+      'jirafa',
+      'pingüino',
+      'delfín',
+      'pulpo',
+      'canguro',
+      'mariposa',
+      'cocodrilo',
+    ],
+    hard: ['camaleón', 'ornitorrinco', 'armadillo', 'erizo'],
+  },
+  food: {
+    easy: ['pizza', 'manzana', 'pastel', 'huevo', 'pan', 'queso', 'plátano', 'galleta'],
+    medium: [
+      'hamburguesa',
+      'espagueti',
+      'sandía',
+      'piña',
+      'helado',
+      'tortilla',
+      'paella',
+      'churros',
+    ],
+    hard: ['aguacate', 'granada', 'croissant', 'coliflor'],
+  },
+  objects: {
+    easy: ['silla', 'mesa', 'llave', 'puerta', 'lámpara', 'libro', 'reloj', 'zapato'],
+    medium: [
+      'tijeras',
+      'mochila',
+      'vela',
+      'telescopio',
+      'bicicleta',
+      'globo',
+      'maleta',
+      'escalera',
+    ],
+    hard: ['reloj de arena', 'paracaídas', 'candelabro', 'brújula'],
+  },
+  nature: {
+    easy: ['sol', 'luna', 'estrella', 'árbol', 'flor', 'nube', 'lluvia', 'montaña'],
+    medium: ['arcoíris', 'volcán', 'cascada', 'tornado', 'isla', 'desierto', 'cactus', 'seta'],
+    hard: ['aurora boreal', 'terremoto', 'avalancha', 'géiser'],
+  },
+  technology: {
+    easy: ['teléfono', 'ordenador', 'cámara', 'robot', 'televisión', 'teclado', 'radio', 'batería'],
+    medium: [
+      'satélite',
+      'cohete',
+      'dron',
+      'micrófono',
+      'linterna',
+      'impresora',
+      'videojuego',
+      'circuito',
+    ],
+    hard: ['holograma', 'algoritmo', 'microchip', 'panel solar'],
+  },
+  sports: {
+    easy: ['fútbol', 'tenis', 'golf', 'natación', 'boxeo', 'béisbol', 'baloncesto', 'esquí'],
+    medium: [
+      'voleibol',
+      'surf',
+      'tiro con arco',
+      'patineta',
+      'gimnasia',
+      'pesca',
+      'ciclismo',
+      'remo',
+    ],
+    hard: ['esgrima', 'jabalina', 'halterofilia', 'maratón'],
+  },
+  places: {
+    easy: ['casa', 'escuela', 'parque', 'granja', 'castillo', 'puente', 'hospital', 'zoo'],
+    medium: [
+      'aeropuerto',
+      'pirámide',
+      'iglú',
+      'rascacielos',
+      'circo',
+      'estadio',
+      'molino',
+      'museo',
+    ],
+    hard: ['torre eiffel', 'coliseo', 'muralla china', 'estación espacial'],
+  },
+  actions: {
+    easy: ['dormir', 'comer', 'saltar', 'bailar', 'llorar', 'reír', 'leer', 'cantar'],
+    medium: [
+      'hacer malabares',
+      'estornudar',
+      'pintar',
+      'escalar',
+      'cocinar',
+      'patinar',
+      'acampar',
+      'abrazar',
+    ],
+    hard: ['sonambulismo', 'soñar despierto', 'hipar', 'bostezar'],
+  },
+};
+export default es;

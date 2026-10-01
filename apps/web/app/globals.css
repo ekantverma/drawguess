@@ -1,0 +1,90 @@
+@import '@fontsource-variable/bricolage-grotesque';
+@import '@fontsource-variable/figtree';
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --background: 252 100% 98%;
+    --foreground: 244 52% 17%;
+    --card: 0 0% 100%;
+    --card-foreground: 244 52% 17%;
+    --primary: 229 86% 56%;
+    --primary-foreground: 0 0% 100%;
+    --secondary: 47 100% 62%;
+    --secondary-foreground: 244 52% 17%;
+    --accent: 332 88% 66%;
+    --accent-foreground: 244 52% 17%;
+    --muted: 250 60% 94%;
+    --muted-foreground: 244 18% 38%;
+    --destructive: 356 80% 52%;
+    --destructive-foreground: 0 0% 100%;
+    --success: 162 72% 36%;
+    --success-foreground: 0 0% 100%;
+    --border: 244 52% 17%;
+    --ring: 229 86% 56%;
+    --shadow-c: 244 52% 17%;
+    color-scheme: light;
+  }
+  .dark {
+    --background: 244 46% 9%;
+    --foreground: 252 60% 96%;
+    --card: 244 38% 14%;
+    --card-foreground: 252 60% 96%;
+    --primary: 229 92% 68%;
+    --primary-foreground: 244 52% 10%;
+    --secondary: 47 100% 62%;
+    --secondary-foreground: 244 52% 12%;
+    --accent: 332 88% 70%;
+    --accent-foreground: 244 52% 12%;
+    --muted: 244 30% 19%;
+    --muted-foreground: 250 25% 72%;
+    --destructive: 356 82% 62%;
+    --destructive-foreground: 244 52% 10%;
+    --success: 162 62% 46%;
+    --success-foreground: 244 52% 10%;
+    --border: 250 40% 68%;
+    --ring: 229 92% 68%;
+    --shadow-c: 244 60% 4%;
+    color-scheme: dark;
+  }
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background font-sans text-foreground antialiased;
+  }
+  h1,
+  h2,
+  h3,
+  h4 {
+    @apply font-display tracking-tight;
+  }
+  :focus-visible {
+    @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    *,
+    *::before,
+    *::after {
+      animation-duration: 0.01ms !important;
+      transition-duration: 0.01ms !important;
+    }
+  }
+}
+
+@layer components {
+  .chunk {
+    @apply rounded-lg border-2 border-border bg-card shadow-chunk;
+  }
+  .paper-dots {
+    background-image: radial-gradient(hsl(var(--foreground) / 0.12) 1px, transparent 1px);
+    background-size: 22px 22px;
+  }
+  .touch-none-canvas {
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+  }
+}

@@ -1,0 +1,35 @@
+{
+  "name": "drawguess",
+  "private": true,
+  "version": "1.0.0",
+  "description": "DrawGuess - real-time multiplayer drawing and guessing game",
+  "workspaces": [
+    "packages/*",
+    "apps/*"
+  ],
+  "engines": {
+    "node": ">=20"
+  },
+  "scripts": {
+    "dev": "concurrently -k -n server,web -c blue,magenta \"npm run dev -w @drawguess/server\" \"npm run dev -w @drawguess/web\"",
+    "build": "npm run build -w @drawguess/server && npm run build -w @drawguess/web",
+    "typecheck": "npm run typecheck -w @drawguess/shared && npm run typecheck -w @drawguess/server && npm run typecheck -w @drawguess/web",
+    "lint": "eslint .",
+    "format": "prettier --write \"**/*.{ts,tsx,json,md,css,mjs}\" --log-level warn",
+    "test": "npm run test -w @drawguess/shared && npm run test -w @drawguess/server && npm run test -w @drawguess/web",
+    "seed": "npm run seed -w @drawguess/server"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.17.0",
+    "concurrently": "^9.1.0",
+    "eslint": "^9.17.0",
+    "eslint-plugin-react-hooks": "^5.1.0",
+    "prettier": "^3.4.2",
+    "typescript": "^5.7.2",
+    "typescript-eslint": "^8.19.0"
+  },
+  "overrides": {
+    "react": "~19.2.0",
+    "react-dom": "~19.2.0"
+  }
+}

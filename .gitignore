@@ -1,0 +1,35 @@
+# Dependencies
+node_modules/
+
+# Next.js
+.next/
+out/
+
+# Build outputs
+dist/
+build/
+coverage/
+
+# Environment variables (IMPORTANT)
+.env
+.env.*
+!.env.example
+!.env.local.example
+
+# TypeScript
+*.tsbuildinfo
+
+# Logs
+*.log
+npm-debug.log*
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Test artifacts
+e2e/shots/
+e2e/*.log
+
+# Local editor settings
+.vscode/
