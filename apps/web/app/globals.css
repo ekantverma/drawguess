@@ -311,16 +311,17 @@
     transition: transform 150ms ease, filter 150ms ease, box-shadow 150ms ease;
   }
   .landing-play-button {
-    background: linear-gradient(135deg, hsl(var(--secondary)) 0%, hsl(var(--accent)) 100%);
-    box-shadow: 0 4px 0 hsl(var(--shadow-c) / 0.22), 0 12px 24px hsl(var(--secondary) / 0.26);
-    color: hsl(var(--secondary-foreground));
+    background: hsl(var(--primary));
+    box-shadow: 0 4px 0 hsl(var(--shadow-c) / 0.18);
+    color: hsl(var(--primary-foreground));
   }
   .landing-create-button {
     min-height: 46px;
     margin-top: 12px;
-    background: linear-gradient(135deg, hsl(var(--primary)) 0%, hsl(var(--accent)) 100%);
-    box-shadow: 0 4px 0 hsl(var(--shadow-c) / 0.22), 0 10px 20px hsl(var(--primary) / 0.22);
-    color: hsl(var(--primary-foreground));
+    border: 2px solid hsl(var(--border) / 0.28);
+    background: hsl(var(--card));
+    box-shadow: 0 3px 0 hsl(var(--shadow-c) / 0.12);
+    color: hsl(var(--foreground));
     font-size: 0.96rem;
   }
   .landing-play-button:hover:not(:disabled),

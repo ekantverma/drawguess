@@ -91,7 +91,7 @@ export class CanvasController {
           listening: false,
         })
       : null;
-    this.fillNode && this.layer?.add(this.fillNode);
+    if (this.fillNode) this.layer?.add(this.fillNode);
     this.strokes.forEach((s) => this.makeNode(s));
     this.layer?.batchDraw();
   }

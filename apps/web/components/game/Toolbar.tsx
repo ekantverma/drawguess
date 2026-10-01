@@ -1,6 +1,6 @@
 'use client';
 import { useEffect } from 'react';
-import { Brush, Eraser, PaintBucket, Pencil, Sparkles, Trash2, Undo2 } from 'lucide-react';
+import { Eraser, PaintBucket, Pencil, Sparkles, Trash2, Undo2 } from 'lucide-react';
 import { CANVAS } from '@drawguess/shared';
 import { Button } from '@/components/ui/button';
 import { gameCanvas } from '@/lib/canvas';
