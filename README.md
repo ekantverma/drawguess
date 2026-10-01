@@ -4,7 +4,7 @@ A real-time, skribbl.io-style game. One player draws a secret word, everyone els
 Built as a monorepo: **Next.js** (App Router) frontend, **Express + Socket.IO** backend, **MongoDB/Mongoose** persistence,
 and a **shared** TypeScript package that holds the Socket.IO event contract and Zod schemas used by both sides.
 
-> **Live URL:** _not deployed yet_ - add yours here after you deploy (see [Deployment](#deployment-notes-for-later)).
+> **Live URL:** [drawguess-game.vercel.app](https://drawguess-game.vercel.app/) (API: [drawguess-server-t3f3.onrender.com](https://drawguess-server-t3f3.onrender.com/health)).
 
 ---------------------------------------------------------------------------------------------------
 
@@ -258,14 +258,17 @@ HTTP-only JWT cookie; production refuses to boot without a strong `JWT_SECRET`; 
 * Votekick needs at least 3 connected players; with 2, use the host kick.
 * No automated test covers touch input on real mobile devices. See `TRACEABILITY.md` for the full verified/unverified list.
 
-## Deployment notes (for later)
-
-Not deployed by this project. Suggested setup, all documentation only:
+## Deployment
 
 * **Database:** MongoDB Atlas -> connection string into `MONGODB_URI`; run `npm run seed` once against it.
 * **Backend (Render/Railway/any Node host with WebSocket support):** build `npm ci && npm run build -w @drawguess/server`,
-  start `npm run start -w @drawguess/server` (`node apps/server/dist/index.js`). Set `NODE_ENV=production`, `PORT` (if the host
-  doesn't), `CLIENT_ORIGIN=https://<your-frontend>`, `MONGODB_URI`, `JWT_SECRET`. Health check: `GET /health`. Keep to **one instance**.
-* **Frontend (Vercel):** project root `apps/web`; build with the monorepo install. Set `NEXT_PUBLIC_API_URL` and
-  `NEXT_PUBLIC_SOCKET_URL` to the backend's public URL. Vercel does **not** run the Socket.IO server; it must live on the backend host.
-* Put the final URLs in the **Live URL** line at the top of this file.
+  start `npm run start -w @drawguess/server` (`node apps/server/dist/index.js`). Set `NODE_ENV=production`, `CLIENT_ORIGIN`,
+  `MONGODB_URI`, and `JWT_SECRET`. For this deployment, `CLIENT_ORIGIN=https://drawguess-game.vercel.app` (no trailing slash).
+  This exact origin is required for both REST CORS and Socket.IO. Health check: `GET /health`. Keep to **one instance**.
+* **Frontend (Vercel):** project root `apps/web`; set both `NEXT_PUBLIC_API_URL` and `NEXT_PUBLIC_SOCKET_URL` to
+  `https://drawguess-server-t3f3.onrender.com`. Redeploy the frontend after changing either value. Vercel does **not** run the
+  Socket.IO server; it must live on the backend host.
+* **CORS check:** request `https://drawguess-server-t3f3.onrender.com/api/rooms/public` with the request header
+  `Origin: https://drawguess-game.vercel.app`. The response must include
+  `Access-Control-Allow-Origin: https://drawguess-game.vercel.app`. If it does not, verify Render's `CLIENT_ORIGIN` value and
+  restart/redeploy the backend. An empty `rooms` array means the server is reachable; it only means there are no public rooms.
