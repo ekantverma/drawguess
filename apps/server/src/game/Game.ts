@@ -293,9 +293,15 @@ export class Game {
     }
     this.room.broadcast('round_end', info);
     this.room.broadcast('score_update', { scores: this.scoreDeltas(t) });
+    this.room.broadcast('timer_update', {
+      timeLeft: this.timeLeft(),
+      timeTotal: this.phaseTotal,
+      phase: this.phase,
+    });
     this.room.system(word ? `The word was "${word}"` : 'Turn skipped');
     this.room.pushState();
     const id = t.turnId;
+    this.startTicker(id);
     this.room.timers.after('turn:next', TIMING.roundEndSec * 1000, () => {
       if (this.live(id, 'ROUND_END')) this.beginTurn();
     });

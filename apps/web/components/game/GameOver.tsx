@@ -21,6 +21,8 @@ export function GameOver({ room, onLeave }: { room: RoomState; onLeave: () => vo
     : tied.length > 1
       ? `It's a tie: ${tied.map((e) => e.name).join(' & ')}`
       : 'Nobody scored this time';
+  const elapsedSeconds = Math.floor(result.durationMs / 1000);
+  const elapsedTime = `${Math.floor(elapsedSeconds / 60)}:${String(elapsedSeconds % 60).padStart(2, '0')}`;
   const podium = [top[1], top[0], top[2]].filter(Boolean);
   const heights = { 1: 'h-28', 2: 'h-20', 3: 'h-14' } as Record<number, string>;
   const tone = { 1: 'bg-secondary', 2: 'bg-muted', 3: 'bg-accent/50' } as Record<number, string>;
@@ -37,6 +39,9 @@ export function GameOver({ room, onLeave }: { room: RoomState; onLeave: () => vo
       <section className="chunk p-6 text-center">
         <Trophy className="mx-auto size-8" />
         <h1 className="text-3xl font-extrabold sm:text-4xl">{title}</h1>
+        <p role="timer" aria-label={`Game time ${elapsedTime}`} className="mt-1 text-sm font-semibold text-muted-foreground">
+          Game time {elapsedTime}
+        </p>
         {result.endReason === 'not_enough_players' && (
           <p className="mt-1 text-sm text-muted-foreground">
             The game ended early because too many players left.

@@ -246,6 +246,22 @@ describe('guessing & scoring', () => {
     expect(drawer.id).not.toBe(guesser.id);
   });
 
+  it('updates the countdown during the round-end intermission', () => {
+    const ctx = startTwo();
+    const { word, guesser } = pickWord(ctx);
+    ctx.room.game!.submitGuess(guesser, word);
+
+    vi.advanceTimersByTime(1000);
+
+    const intermissionTicks = ctx.transport.events('timer_update').filter(
+      (event) => (event.payload as { phase: string }).phase === 'ROUND_END',
+    );
+    expect(intermissionTicks.at(-1)?.payload).toMatchObject({
+      phase: 'ROUND_END',
+      timeLeft: TIMING.roundEndSec - 1,
+    });
+  });
+
   it('timer expiry ends the turn exactly once even if timers race', () => {
     const ctx = startTwo({ drawTime: 15, hints: 0 });
     pickWord(ctx);

@@ -28,7 +28,7 @@ export function GameBoard({ onLeave }: { onLeave: () => void }) {
 
   if (room.phase === 'GAME_OVER') {
     return (
-      <div className="mx-auto max-w-5xl space-y-3 p-3">
+      <div className="mx-auto w-full max-w-5xl space-y-3 p-3">
         <TopBar room={room} onLeave={onLeave} />
         <GameOver room={room} onLeave={onLeave} />
       </div>
@@ -39,8 +39,8 @@ export function GameBoard({ onLeave }: { onLeave: () => void }) {
     <div
       className={
         desktop
-          ? 'mx-auto flex h-dvh max-w-6xl flex-col gap-2 overflow-hidden p-2'
-          : 'mx-auto max-w-7xl space-y-3 p-3'
+          ? 'mx-auto flex h-dvh w-full max-w-6xl flex-col gap-2 overflow-hidden p-2'
+          : 'mx-auto w-full max-w-7xl space-y-3 p-3'
       }
     >
       <TopBar room={room} onLeave={onLeave} />
