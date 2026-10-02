@@ -391,7 +391,14 @@ export class Game {
 
   drawStart(
     player: Player,
-    p: { id: string; x: number; y: number; color: string; width: number; tool: 'brush' | 'marker' | 'eraser' },
+    p: {
+      id: string;
+      x: number;
+      y: number;
+      color: string;
+      width: number;
+      tool: 'brush' | 'marker' | 'eraser' | 'fill';
+    },
   ): Stroke {
     const t = this.assertDrawer(player);
     if (t.strokes.length >= CANVAS.maxStrokesPerTurn)

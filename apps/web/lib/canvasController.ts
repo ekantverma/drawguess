@@ -12,9 +12,7 @@ export class CanvasController {
   strokes: Stroke[] = [];
   private layer: Konva.Layer | null = null;
   private K: KonvaLib | null = null;
-  private nodes = new Map<string, Konva.Line>();
-  private fillNode: Konva.Rect | null = null;
-  private backgroundColor = '#ffffff';
+  private nodes = new Map<string, Konva.Shape>();
 
   attach(layer: Konva.Layer, K: KonvaLib): void {
     this.layer = layer;
@@ -24,8 +22,6 @@ export class CanvasController {
 
   detach(): void {
     this.nodes.forEach((n) => n.destroy());
-    this.fillNode?.destroy();
-    this.fillNode = null;
     this.nodes.clear();
     this.layer = null;
   }
@@ -41,8 +37,28 @@ export class CanvasController {
     return out;
   }
 
-  private makeNode(s: Stroke): Konva.Line | null {
+  private makeNode(s: Stroke): Konva.Shape | null {
     if (!this.K || !this.layer) return null;
+    if (s.tool === 'fill') {
+      const node = new this.K.Shape({
+        stroke: s.color,
+        strokeWidth: s.width,
+        lineCap: 'butt',
+        listening: false,
+        perfectDrawEnabled: false,
+        sceneFunc: (context, shape) => {
+          context.beginPath();
+          for (let i = 0; i + 3 < s.points.length; i += 4) {
+            context.moveTo(s.points[i] * CANVAS.width, s.points[i + 1] * CANVAS.height);
+            context.lineTo(s.points[i + 2] * CANVAS.width, s.points[i + 3] * CANVAS.height);
+          }
+          context.strokeShape(shape);
+        },
+      });
+      this.layer.add(node);
+      this.nodes.set(s.id, node);
+      return node;
+    }
     const marker = s.tool === 'marker';
     const node = new this.K.Line({
       points: CanvasController.virtual(s.points),
@@ -61,37 +77,9 @@ export class CanvasController {
     return node;
   }
 
-  fill(color: string): void {
-    if (!this.K || !this.layer) return;
-    this.backgroundColor = color;
-    if (this.fillNode) this.fillNode.destroy();
-    this.fillNode = new this.K.Rect({
-      x: 0,
-      y: 0,
-      width: CANVAS.width,
-      height: CANVAS.height,
-      fill: color,
-      listening: false,
-    });
-    this.layer.add(this.fillNode);
-    this.layer.batchDraw();
-  }
-
   private rebuild(): void {
     this.nodes.forEach((n) => n.destroy());
     this.nodes.clear();
-    if (this.fillNode) this.fillNode.destroy();
-    this.fillNode = this.K && this.layer
-      ? new this.K.Rect({
-          x: 0,
-          y: 0,
-          width: CANVAS.width,
-          height: CANVAS.height,
-          fill: this.backgroundColor,
-          listening: false,
-        })
-      : null;
-    if (this.fillNode) this.layer?.add(this.fillNode);
     this.strokes.forEach((s) => this.makeNode(s));
     this.layer?.batchDraw();
   }
@@ -115,12 +103,17 @@ export class CanvasController {
     for (const p of points) s.points.push(p);
     const node = this.nodes.get(id);
     if (node) {
-      const arr = node.points();
+      if (s.tool === 'fill') {
+        this.layer?.batchDraw();
+        return;
+      }
+      const line = node as Konva.Line;
+      const arr = line.points();
       // drop the synthetic dot segment added for single points
       if (s.points.length - points.length === 2) arr.length = 2;
       for (let i = 0; i < points.length; i += 2)
         arr.push(points[i] * CANVAS.width, points[i + 1] * CANVAS.height);
-      node.points(arr);
+      line.points(arr);
       this.layer?.batchDraw();
     }
   }
@@ -144,11 +137,8 @@ export class CanvasController {
 
   clear(): void {
     this.strokes = [];
-    this.backgroundColor = '#ffffff';
     this.nodes.forEach((n) => n.destroy());
     this.nodes.clear();
-    if (this.fillNode) this.fillNode.destroy();
-    this.fillNode = null;
     this.rebuild();
   }
 }

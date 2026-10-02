@@ -36,16 +36,37 @@ export function GameBoard({ onLeave }: { onLeave: () => void }) {
   }
 
   return (
-    <div className="mx-auto max-w-7xl space-y-3 p-3">
+    <div
+      className={
+        desktop
+          ? 'mx-auto flex h-dvh max-w-6xl flex-col gap-2 overflow-hidden p-2'
+          : 'mx-auto max-w-7xl space-y-3 p-3'
+      }
+    >
       <TopBar room={room} onLeave={onLeave} />
-      <div className="grid gap-3 lg:grid-cols-[minmax(0,1fr)_340px]">
-        <main className="min-w-0 space-y-3">
+      <div
+        className={
+          desktop
+            ? 'grid min-h-0 flex-1 grid-cols-[minmax(0,1fr)_320px] gap-2'
+            : 'grid gap-3 lg:grid-cols-[minmax(0,1fr)_340px]'
+        }
+      >
+        <main className={desktop ? 'flex min-h-0 min-w-0 flex-col gap-2' : 'min-w-0 space-y-3'}>
           <WordDisplay
             room={room}
             className="rounded-lg border-2 border-border bg-card px-3 py-2"
           />
-          <div className="relative">
-            <Canvas controller={gameCanvas} canDraw={canDraw} playerId={room.you.playerId} />
+          <div
+            className={
+              desktop ? 'relative flex min-h-0 flex-1 items-center justify-center' : 'relative'
+            }
+          >
+            <Canvas
+              controller={gameCanvas}
+              canDraw={canDraw}
+              playerId={room.you.playerId}
+              className={desktop ? 'h-full min-h-0 aspect-auto' : undefined}
+            />
             {room.phase === 'WORD_SELECTION' && isDrawer && g.wordOptions && (
               <WordPicker options={g.wordOptions} />
             )}
@@ -75,7 +96,7 @@ export function GameBoard({ onLeave }: { onLeave: () => void }) {
           )}
         </main>
         {desktop && (
-          <aside className="flex h-[calc(100dvh-8.5rem)] min-h-96 flex-col gap-3">
+          <aside className="flex min-h-0 flex-col gap-2">
             <section className="chunk max-h-[42%] shrink-0 overflow-y-auto p-2">
               <PlayerList mode="game" />
             </section>

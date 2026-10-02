@@ -1,6 +1,7 @@
 import { describe, expect, it } from 'vitest';
 import type { Stroke } from '@drawguess/shared';
 import { CanvasController } from '@/lib/canvasController';
+import { floodFillSpans } from '@/lib/floodFill';
 import { buildTimeline, ReplayPlayer, timelineLength } from '@/lib/replay';
 
 const stroke = (id: string, over: Partial<Stroke> = {}): Stroke => ({
@@ -55,6 +56,32 @@ describe('CanvasController (stroke data model)', () => {
     const c = new CanvasController();
     c.append('nope', [0.1, 0.1]);
     expect(c.strokes).toHaveLength(0);
+  });
+});
+
+describe('floodFillSpans', () => {
+  it('fills a closed region without crossing its outline', () => {
+    const width = 9;
+    const height = 9;
+    const pixels = new Uint8ClampedArray(width * height * 4);
+    for (let i = 0; i < width * height; i++) pixels.set([255, 255, 255, 255], i * 4);
+    for (let i = 1; i < 8; i++) {
+      pixels.set([0, 0, 0, 255], (1 * width + i) * 4);
+      pixels.set([0, 0, 0, 255], (7 * width + i) * 4);
+      pixels.set([0, 0, 0, 255], (i * width + 1) * 4);
+      pixels.set([0, 0, 0, 255], (i * width + 7) * 4);
+    }
+
+    const spans = floodFillSpans(pixels, width, height, 4, 4)!;
+    expect(spans).toHaveLength(5 * 4);
+    expect(spans[0]).toBeCloseTo(2 / width);
+    expect(spans[2]).toBeCloseTo(7 / width);
+    expect(spans.some((_, i) => i % 4 === 0 && spans[i] < 2 / width)).toBe(false);
+  });
+
+  it('stops when the connected region exceeds the stroke point limit', () => {
+    const pixels = new Uint8ClampedArray(4 * 4 * 4).fill(255);
+    expect(floodFillSpans(pixels, 4, 4, 1, 1, 36, 4)).toBeNull();
   });
 });
 

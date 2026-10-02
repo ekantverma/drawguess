@@ -68,7 +68,7 @@ export interface ClientToServerEvents {
     y: number;
     color: string;
     width: number;
-    tool: 'brush' | 'marker' | 'eraser';
+    tool: 'brush' | 'marker' | 'eraser' | 'fill';
   }) => void;
   draw_move: (p: { id: string; points: number[] }) => void;
   draw_end: (p: { id: string }) => void;

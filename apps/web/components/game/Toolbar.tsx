@@ -1,8 +1,15 @@
 'use client';
 import { useEffect } from 'react';
-import { Eraser, PaintBucket, Pencil, Sparkles, Trash2, Undo2 } from 'lucide-react';
+import { Eraser, Paintbrush, PaintBucket, Pencil, Trash2, Undo2 } from 'lucide-react';
 import { CANVAS } from '@drawguess/shared';
 import { Button } from '@/components/ui/button';
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuLabel,
+  DropdownMenuTrigger,
+} from '@/components/ui/dropdown-menu';
 import { gameCanvas } from '@/lib/canvas';
 import { getSocket } from '@/lib/socket';
 import { cn } from '@/lib/utils';
@@ -53,7 +60,7 @@ export function Toolbar({ className }: { className?: string }) {
           aria-pressed={tool === 'brush'}
           title="Brush"
         >
-          <Pencil className="size-4" />
+          <Paintbrush className="size-4" />
         </Button>
         <Button
           size="icon"
@@ -63,7 +70,7 @@ export function Toolbar({ className }: { className?: string }) {
           aria-pressed={tool === 'marker'}
           title="Marker"
         >
-          <Sparkles className="size-4" />
+          <Pencil className="size-4" />
         </Button>
         <Button
           size="icon"
@@ -87,23 +94,52 @@ export function Toolbar({ className }: { className?: string }) {
         </Button>
       </div>
 
-      <div className="flex gap-1" role="group" aria-label="Colors">
-        {CANVAS.colors.map((c) => (
-          <button
-            key={c}
-            type="button"
-            onClick={() => setColor(c)}
-            aria-label={`Color ${c}`}
-            aria-pressed={((tool === 'brush' || tool === 'marker' || tool === 'fill') && color === c)}
-            className={cn(
-              'size-6 rounded-full border-2 border-border transition-transform hover:scale-110',
-              (tool === 'brush' || tool === 'marker' || tool === 'fill') &&
-                color === c &&
-                'scale-110 ring-2 ring-ring ring-offset-1 ring-offset-card',
-            )}
-            style={{ background: c }}
-          />
-        ))}
+      <div role="group" aria-label="Colors">
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button
+              size="sm"
+              variant="outline"
+              className="h-9 gap-2 px-2.5"
+              aria-label="Choose color"
+              title="Choose color"
+            >
+              <span
+                aria-hidden="true"
+                className="size-5 rounded-full border-2 border-border"
+                style={{ background: color }}
+              />
+              Color
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent
+            align="start"
+            className="grid min-w-0 grid-cols-4 gap-1.5 p-2"
+            aria-label="Color palette"
+          >
+            <DropdownMenuLabel className="col-span-4">Choose a color</DropdownMenuLabel>
+            {CANVAS.colors.map((c) => (
+              <DropdownMenuItem
+                key={c}
+                onSelect={() => setColor(c)}
+                role="menuitemradio"
+                aria-checked={color === c}
+                aria-label={`Choose color ${c}`}
+                title={c}
+                className="grid size-9 place-items-center p-0"
+              >
+                <span
+                  aria-hidden="true"
+                  className={cn(
+                    'size-5 rounded-full border-2 border-border',
+                    color === c && 'ring-2 ring-ring ring-offset-1 ring-offset-card',
+                  )}
+                  style={{ background: c }}
+                />
+              </DropdownMenuItem>
+            ))}
+          </DropdownMenuContent>
+        </DropdownMenu>
       </div>
 
       <div className="flex items-center gap-1" role="group" aria-label="Brush size">

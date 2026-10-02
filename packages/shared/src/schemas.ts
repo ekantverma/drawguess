@@ -177,7 +177,7 @@ export const drawStartSchema = z.object({
   y: unit,
   color: z.string().regex(/^#[0-9a-fA-F]{6}$/),
   width: z.number().min(1).max(60),
-  tool: z.enum(['brush', 'marker', 'eraser']),
+  tool: z.enum(['brush', 'marker', 'eraser', 'fill']),
 });
 export const drawMoveSchema = z.object({
   id: strokeId,

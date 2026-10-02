@@ -4,6 +4,7 @@ import Konva from 'konva';
 import { Layer, Rect, Stage } from 'react-konva';
 import { CANVAS, type Stroke } from '@drawguess/shared';
 import type { CanvasController } from '@/lib/canvasController';
+import { floodFillSpans } from '@/lib/floodFill';
 import { getSocket } from '@/lib/socket';
 import { useToolStore } from '@/stores/toolStore';
 import { cn } from '@/lib/utils';
@@ -30,16 +31,24 @@ export default function DrawingCanvas({
 }) {
   const wrapRef = useRef<HTMLDivElement>(null);
   const layerRef = useRef<Konva.Layer>(null);
-  const [width, setWidth] = useState(640);
+  const [size, setSize] = useState({ width: 640, height: 480 });
 
   useEffect(() => {
     const el = wrapRef.current;
     if (!el) return;
-    const ro = new ResizeObserver(([entry]) =>
-      setWidth(Math.max(240, Math.floor(entry.contentRect.width))),
-    );
+    const ro = new ResizeObserver(([entry]) => {
+      const scale = Math.min(
+        entry.contentRect.width / CANVAS.width,
+        entry.contentRect.height / CANVAS.height,
+      );
+      if (scale > 0) {
+        setSize({
+          width: Math.max(1, Math.floor(CANVAS.width * scale)),
+          height: Math.max(1, Math.floor(CANVAS.height * scale)),
+        });
+      }
+    });
     ro.observe(el);
-    setWidth(Math.max(240, Math.floor(el.clientWidth)));
     return () => ro.disconnect();
   }, []);
 
@@ -50,8 +59,7 @@ export default function DrawingCanvas({
     return () => controller.detach();
   }, [controller]);
 
-  const scale = width / CANVAS.width;
-  const height = Math.round(CANVAS.height * scale);
+  const scale = size.width / CANVAS.width;
 
   // ----- drawer input -----
   const live = useRef<{
@@ -60,8 +68,8 @@ export default function DrawingCanvas({
     timer: ReturnType<typeof setInterval>;
     last: [number, number];
   } | null>(null);
-  const sizeRef = useRef({ width, height });
-  sizeRef.current = { width, height };
+  const sizeRef = useRef(size);
+  sizeRef.current = size;
 
   const flush = () => {
     const l = live.current;
@@ -103,12 +111,51 @@ export default function DrawingCanvas({
   const down = (e: Konva.KonvaEventObject<PointerEvent>) => {
     if (!canDraw || live.current) return;
     const { tool, color, size } = useToolStore.getState();
+    const stage = e.target.getStage()!;
+    const pos = norm(stage);
+    if (!pos) return;
     if (tool === 'fill') {
-      controller.fill(color);
+      const raster = stage.toCanvas({ pixelRatio: 1 });
+      const context = raster.getContext('2d');
+      if (!context) return;
+      const image = context.getImageData(0, 0, raster.width, raster.height);
+      const points = floodFillSpans(
+        image.data,
+        raster.width,
+        raster.height,
+        Math.min(raster.width - 1, Math.floor(pos[0] * raster.width)),
+        Math.min(raster.height - 1, Math.floor(pos[1] * raster.height)),
+      );
+      if (!points?.length) return;
+      const id = `${(playerId ?? 'p').slice(0, 8)}-${Date.now().toString(36)}-${strokeCounter++}`;
+      const stroke: Stroke = {
+        id,
+        playerId: playerId ?? '',
+        points,
+        color,
+        width: Math.min(60, Math.max(1, CANVAS.width / raster.width)),
+        tool: 'fill',
+        timestamp: Date.now(),
+        t: 0,
+        dur: 0,
+      };
+      controller.start(stroke);
+      const socket = getSocket();
+      socket.emit('draw_start', {
+        id,
+        x: points[0],
+        y: points[1],
+        color,
+        width: stroke.width,
+        tool: 'fill',
+      });
+      const remaining = points.slice(2);
+      for (let i = 0; i < remaining.length; i += 400) {
+        socket.emit('draw_move', { id, points: remaining.slice(i, i + 400) });
+      }
+      socket.emit('draw_end', { id });
       return;
     }
-    const pos = norm(e.target.getStage()!);
-    if (!pos) return;
     const id = `${(playerId ?? 'p').slice(0, 8)}-${Date.now().toString(36)}-${strokeCounter++}`;
     const stroke: Stroke = {
       id,
@@ -162,23 +209,27 @@ export default function DrawingCanvas({
     <div
       ref={wrapRef}
       className={cn(
-        'touch-none-canvas w-full overflow-hidden rounded-md border-2 border-border bg-white',
+        'flex w-full items-center justify-center overflow-hidden',
+        className ?? 'aspect-[4/3]',
         canDraw && 'cursor-crosshair',
-        className,
       )}
-      style={{ height }}
     >
-      <Stage
-        width={width}
-        height={height}
-        scaleX={scale}
-        scaleY={scale}
-        onPointerDown={down}
-        onPointerMove={move}
+      <div
+        className="touch-none-canvas overflow-hidden rounded-md border-2 border-border bg-white"
+        style={{ width: size.width, height: size.height }}
       >
-        <Layer listening={false}>{bg}</Layer>
-        <Layer ref={layerRef} listening={false} />
-      </Stage>
+        <Stage
+          width={size.width}
+          height={size.height}
+          scaleX={scale}
+          scaleY={scale}
+          onPointerDown={down}
+          onPointerMove={move}
+        >
+          <Layer listening={false}>{bg}</Layer>
+          <Layer ref={layerRef} listening={false} />
+        </Stage>
+      </div>
     </div>
   );
 }
