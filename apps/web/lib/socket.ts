@@ -1,4 +1,5 @@
 import { io, type Socket } from 'socket.io-client';
+import { toast } from 'sonner';
 import type { Ack, ClientToServerEvents, ServerToClientEvents } from '@drawguess/shared';
 import { SOCKET_URL } from './env';
 import { bindSocketEvents } from './socketBinder';
@@ -29,17 +30,30 @@ export class RequestError extends Error {
   }
 }
 
-function waitConnected(s: AppSocket, ms: number): Promise<void> {
+function waitConnected(s: AppSocket): Promise<void> {
   if (s.connected) return Promise.resolve();
   return new Promise((resolve, reject) => {
-    const t = setTimeout(
-      () => reject(new RequestError('OFFLINE', "Can't reach the game server. Is it running?")),
-      ms,
-    );
-    s.once('connect', () => {
-      clearTimeout(t);
+    const noticeId = 'socket-connection-slow';
+    const noticeTimer = setTimeout(() => {
+      toast.info('Connection is taking longer than usual. Still trying…', { id: noticeId });
+    }, 8000);
+    const timeout = setTimeout(() => {
+      s.off('connect', onConnect);
+      toast.dismiss(noticeId);
+      reject(
+        new RequestError(
+          'OFFLINE',
+          "Couldn't connect. Check your connection and try again.",
+        ),
+      );
+    }, 15000);
+    const onConnect = () => {
+      clearTimeout(noticeTimer);
+      clearTimeout(timeout);
+      toast.dismiss(noticeId);
       resolve();
-    });
+    };
+    s.once('connect', onConnect);
     s.connect();
   });
 }
@@ -50,7 +64,7 @@ export async function request<T = undefined>(
   payload?: unknown,
 ): Promise<T> {
   const s = getSocket();
-  await waitConnected(s, 8000);
+  await waitConnected(s);
   return new Promise<T>((resolve, reject) => {
     const t = setTimeout(
       () => reject(new RequestError('TIMEOUT', 'The server took too long to answer.')),
