@@ -159,6 +159,14 @@ describe('word selection & secret isolation', () => {
     expect(opts.every((o) => es.has(o))).toBe(true);
   });
 
+  it('normalizes language aliases and keeps the selected script', () => {
+    const ctx = startTwo({ language: 'Hindi' as any, wordCount: 5 });
+    const opts = ctx.room.game!.turn!.options;
+    const { STATIC_WORDS, flattenWordFile } = require_es();
+    const hi = new Set(flattenWordFile('hi', STATIC_WORDS.hi).map((w) => w.text));
+    expect(opts.every((o) => hi.has(o))).toBe(true);
+  });
+
   it('preserves Hindi vowel marks in guesses and hints', () => {
     const ctx = startTwo({ language: 'hi' });
     expect(ctx.words.matches('किताब', 'किताब')).toBe(true);

@@ -42,6 +42,41 @@ export const LANGUAGE_CODES = LANGUAGES.map((l) => l.code) as unknown as readonl
   ...string[],
 ];
 
+export const LANGUAGE_ALIASES: Record<string, string> = {
+  en: 'en',
+  english: 'en',
+  es: 'es',
+  spanish: 'es',
+  espanol: 'es',
+  español: 'es',
+  fr: 'fr',
+  french: 'fr',
+  francais: 'fr',
+  français: 'fr',
+  de: 'de',
+  german: 'de',
+  deutsch: 'de',
+  hi: 'hi',
+  hindi: 'hi',
+  हिन्दी: 'hi',
+  हिंदी: 'hi',
+  pt: 'pt',
+  portuguese: 'pt',
+  portugues: 'pt',
+  português: 'pt',
+  ja: 'ja',
+  japanese: 'ja',
+  nihongo: 'ja',
+  '日本語': 'ja',
+};
+
+export function normalizeLanguageCode(value: string | null | undefined): string {
+  const raw = value?.trim();
+  if (!raw) return 'en';
+  const key = raw.toLowerCase();
+  return LANGUAGE_ALIASES[key] ?? raw.toLowerCase();
+}
+
 export const AVATAR_LIMITS = { color: 12, eyes: 6, mouth: 6, hat: 6 } as const;
 
 export const REPORT_REASONS = ['cheating', 'offensive', 'spam', 'griefing', 'other'] as const;

@@ -1,4 +1,4 @@
-import { normalizeText, type RoomSettings } from '@drawguess/shared';
+import { normalizeLanguageCode, normalizeText, type RoomSettings } from '@drawguess/shared';
 import { STATIC_WORDS, flattenWordFile, type WordEntry } from '../data/words';
 
 /** In-memory word cache. Loaded from MongoDB when available, else from bundled files. */
@@ -12,11 +12,12 @@ export class WordBank {
   }
 
   setList(language: string, entries: WordEntry[]): void {
-    if (entries.length) this.lists.set(language, entries);
+    if (entries.length) this.lists.set(normalizeLanguageCode(language), entries);
   }
 
   list(language: string): WordEntry[] {
-    return this.lists.get(language) ?? this.lists.get('en') ?? [];
+    const normalized = normalizeLanguageCode(language);
+    return this.lists.get(normalized) ?? this.lists.get('en') ?? [];
   }
 
   languages(): string[] {

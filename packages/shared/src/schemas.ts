@@ -7,6 +7,7 @@ import {
   LIMITS,
   REPORT_REASONS,
   WORD_MODES,
+  normalizeLanguageCode,
 } from './constants';
 import { cleanCustomWord, cleanText } from './text';
 
@@ -94,7 +95,10 @@ export const settingsSchema = z
     wordCount: z.number().int().min(LIMITS.wordCount.min).max(LIMITS.wordCount.max),
     hints: z.number().int().min(LIMITS.hints.min).max(LIMITS.hints.max),
     wordMode: z.enum(WORD_MODES),
-    language: z.string().refine((c) => langCodes.includes(c), 'Unsupported language'),
+    language: z
+      .string()
+      .transform((value) => normalizeLanguageCode(value))
+      .pipe(z.string().refine((c) => langCodes.includes(c), 'Unsupported language')),
     categories: z.array(z.enum(CATEGORIES)).max(CATEGORIES.length),
     customWords: customWordsSchema,
     customWordsOnly: z.boolean(),
@@ -134,7 +138,10 @@ export const createRoomSchema = z.object({
 export const quickPlaySchema = z.object({
   playerName: playerNameSchema,
   avatar: avatarSchema,
-  language: z.string().refine((c) => langCodes.includes(c), 'Unsupported language'),
+  language: z
+    .string()
+    .transform((value) => normalizeLanguageCode(value))
+    .pipe(z.string().refine((c) => langCodes.includes(c), 'Unsupported language')),
 });
 
 export const joinRoomSchema = z.object({
